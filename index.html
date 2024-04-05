@@ -1,0 +1,974 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+
+<head>
+    <title>SIMULADOR CUSTOS PARA RETOMADA DE OBRA</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <link rel="stylesheet" href="./estilos.css">
+    <script src="./funcoes.js"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.mask/1.14.16/jquery.mask.min.js"></script>
+    <script src="https://cdn.amcharts.com/lib/4/core.js"></script>
+    <script src="https://cdn.amcharts.com/lib/4/charts.js"></script>
+    <script src="https://cdn.amcharts.com/lib/4/themes/animated.js"></script>
+    <script>
+        $(document).ready(function () {
+            // Aplicando a máscara de moeda no campo de entrada
+            $('#ValorHab').mask('000.000.000.000.000,00', { reverse: true });
+            $('#ValorEqui').mask('000.000.000.000.000,00', { reverse: true });
+            $('#ValorInfr').mask('000.000.000.000.000,00', { reverse: true });
+            $('#ValorOD').mask('000.000.000.000.000,00', { reverse: true });
+            $('#ValorInfrNI').mask('000.000.000.000.000,00', { reverse: true });
+            $('#AEq').mask('000.000.000.000.000,00', { reverse: true });
+            $('#PercHab').mask('000,00', { reverse: true });
+            $('#PercEqui').mask('000,00', { reverse: true });
+            $('#PercInfr').mask('000,00', { reverse: true });
+            $('#PercInfrNI').mask('000,00', { reverse: true });
+            $('#DtPriRAE').mask('00/00/0000', { reverse: true });
+            $('#DtUltRAE').mask('00/00/0000', { reverse: true });
+            $('#PercSN').mask('000,00', { reverse: true });
+            $('#ValorSN').mask('000.000.000.000.000,00', { reverse: true });
+            $('#BDI').mask('00,00', { reverse: true });
+            $('#PercSPG').mask('00,00', { reverse: true });
+            $('#PercFC').mask('00,00', { reverse: true });
+            $('#PercEB').mask('00,00', { reverse: true });
+            $('#PercIE').mask('00,00', { reverse: true });
+            $('#PercCpl').mask('00,00', { reverse: true });
+        });
+
+    </script>
+
+
+</head>
+
+<body>
+
+
+    <nav class="navbar navbar-light bg-light">
+        <a class="navbar-brand" href="#">
+            <img src="toplogocaixa.png" class="d-inline-block align-top" alt="" loading="lazy">
+            Simulador do Custo Estimado de Retomada
+        </a>
+    </nav>
+
+    <div class="confidencial">#INTERNO.CONFIDENCIAL</div>
+
+    <div class="container mt-5">
+        <h2>Observações:</h2>
+        <form>
+            <div class="form-group">
+                <textarea class="minha-textarea" id="observacoes"
+                    rows="20">1. Os valores apresentados nesta planilha são apenas estimativas e podem variar em função de diversos fatores, incluindo flutuações nos preços de materiais, mão de obra e demais condições econômicas;
+    2. Não leva em consideração possíveis variações no projeto que podem ocorrer durante a execução, impactando os custos previstos;
+    3. Recomenda-se revisar e atualizar regularmente esta planilha para refletir as mudanças nas condições do mercado;
+    4. Para a realização do cálculo da estimativa, deverão ser preenchidas as células em cor cinza;
+    5. O cálculo da involução deriva de modelo estatístico baseado em casos empíricos analisados pela CIHAR/SP. O modelo está travado para não involuir mais do que 20% no empreendimento e também não involuir empreendimentos com menos de 50% de execução de obra global;
+    6. Para a "Estimativa de Custo de Construção Adotado (com BDI)" utiliza duas metodologias de cálculo e apresenta os valores do intervalo estimado do custo de retomada;
+    7. A metodologia 1 utiliza os valores contratados do empreendimento atualizados pela variação do SINAPI no período (database da contratação e database atual), além de considerar o estágio atual de obras;
+    8. A metodologia 2 utiliza o valor do m² do projeto SINAPI escolhido (considerando UF, padrão de acabamento, e área equivalente do empreendimento) acrescido dos valores dos itens não contemplado no referencial (que deverão ser preenchidos manualmente em planilha auxiliar acessada por botão ao lado), além do considerar o estágio atual de obras;
+    9. O BDI deverá ser informado, comumente, nos casos de retomada, tem sido praticado o valor de 30%;
+    10. Para o item "Custos com Legalização e seguros (Habite-se e cartoriais)", poderá ser considerado o valor de 10% do custo de construção (com BDI), como estimativa simplificada inicial;
+    11. Para o item "Custos com Impostos (IPTU, INSS, ISSQN, etc)" poderá ser considerado o valor de 8,2% da soma do custo de construção adotado (com BDI) e custos com legalização e seguros, como estimativa simplificada inicial.</textarea>
+            </div>
+        </form>
+    </div>
+
+
+    <div class="container text-left">
+        <div class="col-md-12">
+
+            <div class="row">
+                <h2 class="imobBoxTituloGrupo">Dados do Empreendimento</h2>
+            </div>
+
+            <div class="row">
+                <div class="col-md-2">
+                    <label class="imobBoxTipoTitulo">APF:</label>
+                </div>
+                <div class="col-md-8">
+                    <label class="imobBoxTipoTitulo">Empreendimento:</label>
+                </div>
+                <div class="col-md-2">
+                    <label class="imobBoxTipoTitulo">Quantidade UHs:</label>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-2">
+                    <input type="text" id="txtAPF" name="txtAPF" class="txt">
+                </div>
+                <div class="col-md-8">
+                    <input type="text" id="txtEmpreendimento" name="txtEmpreendimento" class="txt">
+                </div>
+                <div class="col-md-2">
+                    <input type="text" id="txtUH" name="txtUH" class="txt">
+                </div>
+            </div>
+            <br>
+            <br>
+            <div class="row">
+                <h2 class="imobBoxTituloGrupo">Valores Orçamento Contratado</h2>
+            </div>
+            <div class="row">
+                <div class="col-md-3">
+                    <label class="imobBoxTipoTitulo">Habitação:</label>
+                </div>
+                <div class="col-md-3">
+                    <label class="imobBoxTipoTitulo">Equipamentos:</label>
+                </div>
+                <div class="col-md-3">
+                    <label class="imobBoxTipoTitulo">Infraestrutura:</label>
+                </div>
+
+
+            </div>
+            <div class="row">
+                <div class="col-md-3">
+                    <input type="text" placeholder="R$ 0,00" id="ValorHab" name="ValorHab" class="txt">
+                </div>
+                <div class="col-md-3">
+                    <input type="text" placeholder="R$ 0,00" id="ValorEqui" name="ValorEqui" class="txt">
+                </div>
+                <div class="col-md-3">
+                    <input type="text" placeholder="R$ 0,00" id="ValorInfr" name="ValorInfr" class="txt">
+                </div>
+
+            </div>
+            <div class="row">
+                <div class="col-md-3">
+                    <label class="imobBoxTipoTitulo">Outras Despesas:</label>
+                </div>
+                <div class="col-md-3">
+                    <label class="imobBoxTipoTitulo">Infra Não Incidente:</label>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-3">
+                    <input type="text" placeholder="R$ 0,00" id="ValorOD" name="ValorOD" class="txt">
+                </div>
+                <div class="col-md-3">
+                    <input type="text" placeholder="R$ 0,00" id="ValorInfrNI" name="ValorInfrNI" class="txt">
+                </div>
+            </div>
+            <br>
+            <br>
+            <div class="row">
+                <h2 class="imobBoxTituloGrupo">Dados do Projeto Paradigma</h2>
+            </div>
+            <div class="row">
+                <div class="col-md-12">
+                    <label class="imobBoxTipoTitulo">Tipologia:</label>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-12">
+                    <select id="cboTipo" class="imobBox">
+                        <option value=""></option>
+                        <option value="7088">CP.1-2Q.....40: Casa popular, 1 pavimento, sala, 2 quartos, circulação,
+                            banheiro e
+                            cozinha
+                        </option>
+                        <option value="7089">CR.1-2Q.....62: Casa residencial, 1 pavimento, varanda, sala,2 quartos,
+                            circulação,
+                            banheiro, cozinha, área de serviço, quarto e WC de empregada</option>
+                        <option value="7102">CP.2-3Q.....56: Casa popular, 2 pavimentos, sala, 3 quartos,
+                            circulação,
+                            banheiro e
+                            cozinha
+                        </option>
+                        <option value="7105">PR4-2QT...1433: Prédio residencial, térreo, 4 pavimentos tipo, sala, 2
+                            quartos,
+                            circulação,
+                            banheiro, cozinha, área de serviço, quarto e WC de empregada</option>
+                        <option value="7106">PR4-3QT...2264: Prédio residencial, térreo, 4 pavimentos tipo, sala, 3
+                            quartos,
+                            circulação,
+                            banheiro, lavabo, cozinha, área de serviço, quarto e WC de empregada</option>
+                        <option value="7110">PR8-2QP...2620: Prédio residencial, pilotis, 8 pavimentos tipo, sala, 2
+                            quartos,
+                            circulação, banheiro, cozinha, área de serviço, quarto e WC de empregada</option>
+                        <option value="7113">PR12-2QP..3597: Prédio residencial, pilotis, 12 pavimentos tipo, sala,
+                            2
+                            quartos,
+                            circulação, banheiro, cozinha, área de serviço, quarto e WC de empregada</option>
+                    </select>
+                </div>
+            </div>
+            <br>
+            <div class="row">
+                <div class="col-md-3">
+                    <label class="imobBoxTipoTitulo">Estado:</label>
+                </div>
+                <div class="col-md-2">
+                    <label class="imobBoxTipoTitulo">Padrão:</label>
+                </div>
+                <div class="col-md-3">
+                    <label class="imobBoxTipoTitulo">Área Equivalente:</label>
+                </div>
+                <div class="col-md-2">
+                    <label class="imobBoxTipoTitulo">Mês LAE:</label>
+                </div>
+                <div class="col-md-2">
+                    <label class="imobBoxTipoTitulo">Ano LAE:</label>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-3">
+                    <select id="cboUF" class="imobBox">
+                        <option value=""></option>
+                        <option value="12">ACRE</option>
+                        <option value="27">ALAGOAS</option>
+                        <option value="16">AMAPÁ</option>
+                        <option value="13">AMAZONAS</option>
+                        <option value="29">BAHIA</option>
+                        <option value="23">CEARÁ</option>
+                        <option value="53">DISTRITO FEDERAL</option>
+                        <option value="32">ESPÍRITO SANTO</option>
+                        <option value="52">GOIÁS</option>
+                        <option value="21">MARANHÃO</option>
+                        <option value="51">MATO GROSSO</option>
+                        <option value="50">MATO GROSSO DO SUL</option>
+                        <option value="31">MINAS GERAIS</option>
+                        <option value="15">PARÁ</option>
+                        <option value="25">PARAÍBA</option>
+                        <option value="41">PARANÁ</option>
+                        <option value="26">PERNAMBUCO</option>
+                        <option value="22">PIAUÍ</option>
+                        <option value="33">RIO DE JANEIRO</option>
+                        <option value="24">RIO GRANDE DO NORTE</option>
+                        <option value="43">RIO GRANDE DO SUL</option>
+                        <option value="11">RONDÔNIA</option>
+                        <option value="42">SANTA CATARINA</option>
+                        <option value="35">SÃO PAULO</option>
+                        <option value="28">SERGIPE</option>
+                        <option value="17">TOCANTINS</option>
+                    </select>
+                </div>
+                <div class="col-md-2">
+                    <select id="cboPadrao" class="imobBox">
+                        <option value=""></option>
+                        <option value="786">ALTO</option>
+                        <option value="787">NORMAL</option>
+                        <option value="788">BAIXO</option>
+                        <option value="789">MÍNIMO</option>
+                    </select>
+                </div>
+                <div class="col-md-3">
+                    <input type="text" id="AEq" name="AEq" class="txt">
+                </div>
+
+                <div class="col-md-2">
+                    <select id="cboMesInicial" class="imobBox">
+                        <option value=""></option>
+                        <option value="01">JANEIRO</option>
+                        <option value="02">FEVEREIRO</option>
+                        <option value="03">MARÇO</option>
+                        <option value="04">ABRIL</option>
+                        <option value="05">MAIO</option>
+                        <option value="06">JUNHO</option>
+                        <option value="07">JULHO</option>
+                        <option value="08">AGOSTO</option>
+                        <option value="09">SETEMBRO</option>
+                        <option value="10">OUTUBRO</option>
+                        <option value="11">NOVEMBRO</option>
+                        <option value="12">DEZEMBRO</option>
+                    </select>
+                </div>
+                <div class="col-md-2">
+                    <select id="cboAnoInicial" class="imobBox">
+                        <option value=""></option>
+                        <option value="2009">2009</option>
+                        <option value="2010">2010</option>
+                        <option value="2011">2011</option>
+                        <option value="2012">2012</option>
+                        <option value="2013">2013</option>
+                        <option value="2014">2014</option>
+                        <option value="2015">2015</option>
+                        <option value="2016">2016</option>
+                        <option value="2017">2017</option>
+                        <option value="2018">2018</option>
+                        <option value="2019">2019</option>
+                        <option value="2020">2020</option>
+                        <option value="2021">2021</option>
+                        <option value="2022">2022</option>
+                        <option value="2023">2023</option>
+                        <option value="2024">2024</option>
+                    </select>
+                </div>
+            </div>
+            <br>
+            <br>
+            <div class="row">
+                <div class="col-md-3"></div>
+                <div class="col-md-6">
+                    <label class="imobBoxTipoTitulo">Serviços Não Inclusos no Projeto Referencial</label>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-4">
+                    <label class="imobBoxTipoTitulo"></label>
+                </div>
+                <div class="col-md-2">
+                    <label class="txt_center">%</label>
+                </div>
+                <div class="col-md-2">
+                    <label class="txt_center">Valor</label>
+                </div>
+                <div class="col-md-2">
+                    <label class="txt_center">Mín. Normativo</label>
+                </div>
+                <div class="col-md-2">
+                    <label class="imobBoxTipoTitulo">Max. Normativo</label>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-4">
+                    <label class="txt_macroitem">1 - Serviços Preliminares e Gerais</label>
+                </div>
+                <div class="col-md-2">
+                    <input type="text" placeholder="0,00" id="PercSPG" name="PercSPG" class="txt"
+                        onchange="atualizaValorSNI()">
+                </div>
+                <div class="col-md-2">
+                    <label class="txt_macroitem" id="ValorSPG"></label>
+                </div>
+                <div class="col-md-2">
+                    <label class="txt_center">16%</label>
+                </div>
+                <div class="col-md-2">
+                    <label class="txt_center">16%</label>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-4">
+                    <label class="txt_macroitem">2 - Fundações e Contenções</label>
+                </div>
+                <div class="col-md-2">
+                    <input type="text" placeholder="0,00" id="PercFC" name="PercFC" class="txt"
+                        onchange="atualizaValorSNI()">
+                </div>
+                <div class="col-md-2">
+                    <label class="txt_macroitem" id="ValorFC"></label>
+                </div>
+                <div class="col-md-2">
+                    <label class="txt_center">3%</label>
+                </div>
+                <div class="col-md-2">
+                    <label class="txt_center">8%</label>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-4">
+                    <label class="txt_macroitem">8.5 - Elevadores e Bombas</label>
+                </div>
+                <div class="col-md-2">
+                    <input type="text" placeholder="0,00" id="PercEB" name="PercEB" class="txt"
+                        onchange="atualizaValorSNI()">
+                </div>
+                <div class="col-md-2">
+                    <label class="txt_macroitem" id="ValorEB"></label>
+                </div>
+                <div class="col-md-2">
+                    <label class="txt_center">0%</label>
+                </div>
+                <div class="col-md-2">
+                    <label class="txt_center">6%</label>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-4">
+                    <label class="txt_macroitem">8.6 + 8.7 + 8.8 - Instalações especiais</label>
+                </div>
+                <div class="col-md-2">
+                    <input type="text" placeholder="0,00" id="PercIE" name="PercIE" class="txt"
+                        onchange="atualizaValorSNI()">
+                </div>
+                <div class="col-md-2">
+                    <label class="txt_macroitem" id="ValorIE"></label>
+                </div>
+                <div class="col-md-2">
+                    <label class="txt_center">0%</label>
+                </div>
+                <div class="col-md-2">
+                    <label class="txt_center">7%</label>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-4">
+                    <label class="txt_macroitem">9 - Complementações</label>
+                </div>
+                <div class="col-md-2">
+                    <input type="text" placeholder="0,00" id="PercCpl" name="PercCpl" class="txt"
+                        onchange="atualizaValorSNI()">
+                </div>
+                <div class="col-md-2">
+                    <label class="txt_macroitem" id="ValorCpl"></label>
+                </div>
+                <div class="col-md-2">
+                    <label class="txt_center">0%</label>
+                </div>
+                <div class="col-md-2">
+                    <label class="txt_center">-</label>
+                </div>
+            </div>
+            <br>
+            <br>
+            <div class="row">
+                <h2 class="imobBoxTituloGrupo">Percentuais de Obra (%)</h2>
+            </div>
+            <div class="row">
+                <div class="col-md-2">
+                    <label class="imobBoxTipoTitulo">Habitação:</label>
+                </div>
+                <div class="col-md-2">
+                    <label class="imobBoxTipoTitulo">Equipamentos:</label>
+                </div>
+                <div class="col-md-2">
+                    <label class="imobBoxTipoTitulo">Infraestrutura:</label>
+                </div>
+                <div class="col-md-3">
+                    <label class="imobBox"></label>
+                </div>
+                <div class="col-md-3">
+                    <label class="imobBoxTipoTitulo">Infra Não Incidente:</label>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-2">
+                    <input type="text" placeholder="0,00" id="PercHab" name="PercHab" class="txt"
+                        onchange="calculaPercentualGlobal()">
+                </div>
+                <div class="col-md-2">
+                    <input type="text" placeholder="0,00" id="PercEqui" name="PercEqui" class="txt"
+                        onchange="calculaPercentualGlobal()">
+                </div>
+                <div class="col-md-2">
+                    <input type="text" placeholder="0,00" id="PercInfr" name="PercInfr" class="txt"
+                        onchange="calculaPercentualGlobal()">
+                </div>
+                <div class="col-md-3">
+                    <label class="PerTotal" id="PercTotal"></label>
+                </div>
+                <div class="col-md-3">
+                    <input type="text" placeholder="0,00" id="PercInfrNI" name="PercInfrNI" class="txt">
+                </div>
+            </div>
+            <br>
+            <script>
+                function calculaPercentualGlobal() {
+
+                    let ValorHab = document.getElementById("ValorHab").value;
+                    ValorHab = parseNumberFromString(ValorHab)
+
+                    let ValorEqui = document.getElementById("ValorEqui").value;
+                    ValorEqui = parseNumberFromString(ValorEqui)
+
+                    let ValorInfr = document.getElementById("ValorInfr").value;
+                    ValorInfr = parseNumberFromString(ValorInfr)
+
+                    // Calculando os incrementos percentuais
+                    let somaValores = ValorHab + ValorEqui + ValorInfr;
+
+                    let IncHab = (ValorHab / somaValores);
+                    let IncEqui = (ValorEqui / somaValores);
+                    let IncInfr = (ValorInfr / somaValores);
+
+                    // Atualizando o DOM com os novos valores percentuais
+                    let Hab = document.getElementById("PercHab").value;
+                    Hab = parseNumberFromString(Hab);
+                    let Equi = document.getElementById("PercEqui").value;
+                    Equi = parseNumberFromString(Equi);
+                    let Infr = document.getElementById("PercInfr").value;
+                    Infr = parseNumberFromString(Infr);
+
+                    let PercTotal = document.getElementById("PercTotal");
+
+                    let resultadoFinal = IncHab * Hab + IncEqui * Equi + IncInfr * Infr;
+
+                    PercTotal.textContent = resultadoFinal.toFixed(2) + "% (Global)";
+
+                }
+
+            </script>
+
+            <div class="row">
+                <div class="col-md-5">
+                    <label class="imobBoxTipoTitulo">O RAE informado refere-se ao RAE involução?</label>
+                </div>
+                <div class="col-md-2">
+                    <select id="cboSN" class="imobBoxData">
+                        <option value=""></option>
+                        <option value="SIM">SIM</option>
+                        <option value="NÃO">NÃO</option>
+                    </select>
+                </div>
+            </div>
+            <br>
+            <br>
+            <div class="row">
+                <h2 class="imobBoxTituloGrupo">Datas</h2>
+            </div>
+            <div class="row">
+                <div class="col-md-3">
+                    <label class="imobBoxTipoTitulo">Data Primeiro RAE:</label>
+                </div>
+                <div class="col-md-3">
+                    <label class="imobBoxTipoTitulo">Data Último RAE:</label>
+                </div>
+
+            </div>
+            <div class="row">
+                <div class="col-md-3">
+                    <input type="text" placeholder="DD/MM/AAAA" id="DtPriRAE" name="DtPriRAE" class="txt"
+                        onchange="calcularInvolucao()">
+                </div>
+                <div class="col-md-3">
+                    <input type="text" placeholder="DD/MM/AAAA" id="DtUltRAE" name="DtUltRAE" class="txt"
+                        onchange="calcularInvolucao()">
+                </div>
+
+            </div>
+            <br>
+
+            <br>
+            <div class="row">
+                <h2 class="imobBoxTituloGrupo">Dados Simulação</h2>
+            </div>
+            <div class="row">
+                <div class="col-md-2">
+                    <label class="imobBoxTipoTitulo">Mês Simulação:</label>
+                </div>
+                <div class="col-md-2">
+                    <label class="imobBoxTipoTitulo">Ano Simulação:</label>
+                </div>
+                <div class="col-md-3">
+                    <label class="imobBoxTipoTitulo">Quant. meses Decorridos:</label>
+                </div>
+                <div class="col-md-3">
+                    <label class="imobBoxTipoTitulo">Involução Estimada (%):</label>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-2">
+                    <select id="cboMesFinal" class="imobBox" onchange="calcularInvolucao()">
+                        <option value=""></option>
+                        <option value="01">JANEIRO</option>
+                        <option value="02">FEVEREIRO</option>
+                        <option value="03">MARÇO</option>
+                        <option value="04">ABRIL</option>
+                        <option value="05">MAIO</option>
+                        <option value="06">JUNHO</option>
+                        <option value="07">JULHO</option>
+                        <option value="08">AGOSTO</option>
+                        <option value="09">SETEMBRO</option>
+                        <option value="10">OUTUBRO</option>
+                        <option value="11">NOVEMBRO</option>
+                        <option value="12">DEZEMBRO</option>
+                    </select>
+                </div>
+                <div class="col-md-2">
+                    <select id="cboAnoFinal" class="imobBox" onchange="calcularInvolucao()">
+                        <option value=""></option>
+                        <option value="2009">2009</option>
+                        <option value="2010">2010</option>
+                        <option value="2011">2011</option>
+                        <option value="2012">2012</option>
+                        <option value="2013">2013</option>
+                        <option value="2014">2014</option>
+                        <option value="2015">2015</option>
+                        <option value="2016">2016</option>
+                        <option value="2017">2017</option>
+                        <option value="2018">2018</option>
+                        <option value="2019">2019</option>
+                        <option value="2020">2020</option>
+                        <option value="2021">2021</option>
+                        <option value="2022">2022</option>
+                        <option value="2023">2023</option>
+                        <option value="2024">2024</option>
+                    </select>
+                </div>
+                <div class="col-md-3">
+                    <label class="txt_center" id="QtdMeses"></label>
+                </div>
+                <div class="col-md-3">
+                    <label class="txt_center" id="Involucao"></label>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-md-2">
+                    <label class="imobBoxTipoTitulo">BDI Simulação:</label>
+                </div>
+                <div class="col-md-3">
+                    <label class="imobBoxTipoTitulo">Serviços Novos:</label>
+                </div>
+                <div class="col-md-3">
+                    <label class="imobBoxTipoTitulo">Percentual Executado:</label>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-md-2">
+                    <input type="text" placeholder="0,00" id="BDI" name="BDI" class="txt">
+                </div>
+                <div class="col-md-3">
+                    <input type="text" placeholder="R$ 0,00" id="ValorSN" name="ValorSN" class="txt">
+                </div>
+                <div class="col-md-3">
+                    <input type="text" placeholder="0,00" id="PercSN" name="PercSN" class="txt">
+                </div>
+            </div>
+            <br>
+            <br>
+            <div class="row">
+                <div class="col-md-3">
+
+                </div>
+                <div class="col-md-6">
+                    <button class="botao" onclick="atualizaValores(), criarGraficoAmCharts()">Simular</button>
+                </div>
+            </div>
+            <br>
+            <br>
+            <br>
+            <div class="row">
+                <h1 class="tituloResultado">Resultados:</h1>
+            </div>
+            <br>
+            <br>
+            <div class="row">
+                <h2 class="imobBoxTituloGrupo">Atualização de Custos:</h2>
+            </div>
+            <div class="row">
+                <div class="col-md-3">
+                    <label class="imobBoxTipoTitulo">Custo m² Contratação (R$):</label>
+                </div>
+                <div class="col-md-3">
+                    <label class="imobBoxTipoTitulo">Custo m² Simulação (R$):</label>
+                </div>
+                <div class="col-md-3">
+                    <label class="imobBoxTipoTitulo">Variação no Período (%):</label>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-3">
+                    <label type="text" class="txt" id="valorMetroInicial">R$ 0,00</label>
+                </div>
+                <div class="col-md-3">
+                    <label type="text" class="txt" id="valorMetroFinal">R$ 0,00</label>
+                </div>
+                <div class="col-md-3">
+                    <label type="text" class="txt" id="valorVariacao">0,00</label>
+                </div>
+            </div>
+            <br>
+            <br>
+            <div class="row">
+                <h2 class="imobBoxTituloGrupo">Metodologia 1:</h2>
+            </div>
+            <div class="row">
+                <label class="imobBoxTipoTitulo">Utiliza o valor contratado do empreendimento atualizado pela variação
+                    do SINAPI no período, considerando o percentual de obras à executar</label>
+            </div>
+            <div class="row">
+                <div class="col-md-5">
+                    <label class="txt_macroitem">Custo Total de Construção (c/ BDI)</label>
+                </div>
+                <div class="col-md-4">
+                    <label class="txt_resultado" id="ValorCalcTotalResumo1">R$ 0,00</label>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-12">
+                    <label class="txt_alerta" id="AlertaData1"></label>
+                </div>
+            </div>
+            <br>
+
+            <div class="row">
+                <div class="col-md-4"></div>
+                <div class="col-md-2">
+                    <button class="toggle-button">Mostrar/Ocultar Detalhes</button>
+                </div>
+            </div>
+            <br>
+
+            <div id="detalhesValoresCalculados" style="display: none;">
+
+                <div class="row">
+                    <div class="col-md-3">
+                        <label class="imobBoxTipoTitulo"></label>
+                    </div>
+                    <div class="col-md-2">
+                        <label class="imobBoxTipoTitulo">% à Exec.</label>
+                    </div>
+                    <div class="col-md-4">
+                        <label class="imobBoxTipoTitulo">Valor (R$)</label>
+                    </div>
+                    <div class="col-md-1">
+                        <label class="imobBoxTipoTitulo">%</label>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-3">
+                        <label class="txt_macroitem">Habitação</label>
+                    </div>
+                    <div class="col-md-2">
+                        <label class="txt_resultado" id="%ExecHab1">0,00</label>
+                    </div>
+                    <div class="col-md-4">
+                        <label class="txt_resultado" id="ValorCalcHab1">R$ 0,00</label>
+                    </div>
+                    <div class="col-md-1">
+                        <label class="txt_resultado" id="%HabFinal1">0,00</label>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-3">
+                        <label class="txt_macroitem">Equipamentos</label>
+                    </div>
+                    <div class="col-md-2">
+                        <label class="txt_resultado" id="%ExecEqui1">0,00</label>
+                    </div>
+                    <div class="col-md-4">
+                        <label class="txt_resultado" id="ValorCalcEqui1">R$ 0,00</label>
+                    </div>
+                    <div class="col-md-1">
+                        <label class="txt_resultado" id="%EquiFinal1">0,00</label>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-3">
+                        <label class="txt_macroitem">Infraestrutura Incidente</label>
+                    </div>
+                    <div class="col-md-2">
+                        <label class="txt_resultado" id="%ExecInfr1">0,00</label>
+                    </div>
+                    <div class="col-md-4">
+                        <label class="txt_resultado" id="ValorCalcInfr1">R$ 0,00</label>
+                    </div>
+                    <div class="col-md-1">
+                        <label class="txt_resultado" id="%InfrFinal1">0,00</label>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-3">
+                        <label class="txt_macroitem">Serviços Novos</label>
+                    </div>
+                    <div class="col-md-2">
+                        <label class="txt_resultado" id="PerServNovosTab1">0,00</label>
+                    </div>
+                    <div class="col-md-4">
+                        <label class="txt_resultado" id="ValorCalcSN1">R$ 0,00</label>
+                    </div>
+                    <div class="col-md-1">
+                        <label class="txt_resultado" id="%SNFinal1">0,00</label>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-3">
+                        <label class="txt_macroitem">Infra Não Incidente</label>
+                    </div>
+                    <div class="col-md-2">
+                        <label class="txt_resultado" id="PerInfrNITab1">0,00</label>
+                    </div>
+                    <div class="col-md-4">
+                        <label class="txt_resultado" id="ValorCalcInfrNI1">R$ 0,00</label>
+                    </div>
+                    <div class="col-md-1">
+                        <label class="txt_resultado" id="%InfrNIFinal1">0,00</label>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-5">
+                        <label class="txt_macroitem">Custo Total de Construção (s/ BDI)</label>
+                    </div>
+                    <div class="col-md-4">
+                        <label class="txt_resultado" id="ValorCalcTotal1">R$ 0,00</label>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-5">
+                        <label class="txt_macroitem">Valor do BDI</label>
+                    </div>
+                    <div class="col-md-4">
+                        <label class="txt_resultado" id="ValorBDI1">R$ 0,00</label>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-5">
+                        <label class="txt_macroitem">Custo Total de Construção (c/ BDI)</label>
+                    </div>
+                    <div class="col-md-4">
+                        <label class="txt_resultado" id="ValorCalcTotalBDI1">R$ 0,00</label>
+                    </div>
+                </div>
+                <br>
+                <br>
+
+                <div class="row">
+                    <h2 class="imobBoxTituloGrupo">Metodologia 2:</h2>
+                </div>
+                <div class="row">
+                    <label class="imobBoxTipoTitulo">Utiliza o valor do m² SINAPI atual multiplicado pelo valor da área
+                        equivalente das edificações, considerando o percentual de obras à executar</label>
+                </div>
+                <div class="row">
+                    <div class="col-md-5">
+                        <label class="txt_macroitem">Custo Total de Construção (c/ BDI)</label>
+                    </div>
+                    <div class="col-md-4">
+                        <label class="txt_resultado" id="ValorCalcTotalResumo2">R$ 0,00</label>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-12">
+                        <label class="txt_alerta" id="AlertaData2"></label>
+                    </div>
+                </div>
+                <br>
+
+                <div class="row">
+                    <div class="col-md-4"></div>
+                    <div class="col-md-2">
+                        <button class="toggle-button2">Mostrar/Ocultar Detalhes</button>
+                    </div>
+                </div>
+                <br>
+
+                <div id="detalhesValoresCalculados2" style="display: none;">
+
+                    <div class="row">
+                        <div class="col-md-3">
+                            <label class="imobBoxTipoTitulo"></label>
+                        </div>
+                        <div class="col-md-2">
+                            <label class="imobBoxTipoTitulo">% à Exec.</label>
+                        </div>
+                        <div class="col-md-4">
+                            <label class="imobBoxTipoTitulo">Valor (R$)</label>
+                        </div>
+                        <div class="col-md-1">
+                            <label class="imobBoxTipoTitulo">%</label>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-3">
+                            <label class="txt_macroitem">Habitação</label>
+                        </div>
+                        <div class="col-md-2">
+                            <label class="txt_resultado" id="%ExecHab2">0,00</label>
+                        </div>
+                        <div class="col-md-4">
+                            <label class="txt_resultado" id="ValorCalcHab2">R$ 0,00</label>
+                        </div>
+                        <div class="col-md-1">
+                            <label class="txt_resultado" id="%HabFinal2">0,00</label>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-3">
+                            <label class="txt_macroitem">Equipamentos</label>
+                        </div>
+                        <div class="col-md-2">
+                            <label class="txt_resultado" id="%ExecEqui2">0,00</label>
+                        </div>
+                        <div class="col-md-4">
+                            <label class="txt_resultado" id="ValorCalcEqui2">R$ 0,00</label>
+                        </div>
+                        <div class="col-md-1">
+                            <label class="txt_resultado" id="%EquiFinal2">0,00</label>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-3">
+                            <label class="txt_macroitem">Infraestrutura Incidente</label>
+                        </div>
+                        <div class="col-md-2">
+                            <label class="txt_resultado" id="%ExecInfr2">0,00</label>
+                        </div>
+                        <div class="col-md-4">
+                            <label class="txt_resultado" id="ValorCalcInfr2">R$ 0,00</label>
+                        </div>
+                        <div class="col-md-1">
+                            <label class="txt_resultado" id="%InfrFinal2">0,00</label>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-3">
+                            <label class="txt_macroitem">Serviços Novos</label>
+                        </div>
+                        <div class="col-md-2">
+                            <label class="txt_resultado" id="PerServNovosTab2">0,00</label>
+                        </div>
+                        <div class="col-md-4">
+                            <label class="txt_resultado" id="ValorCalcSN2">R$ 0,00</label>
+                        </div>
+                        <div class="col-md-1">
+                            <label class="txt_resultado" id="%SNFinal2">0,00</label>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-3">
+                            <label class="txt_macroitem">Infra Não Incidente</label>
+                        </div>
+                        <div class="col-md-2">
+                            <label class="txt_resultado" id="PerInfrNITab2">0,00</label>
+                        </div>
+                        <div class="col-md-4">
+                            <label class="txt_resultado" id="ValorCalcInfrNI2">R$ 0,00</label>
+                        </div>
+                        <div class="col-md-1">
+                            <label class="txt_resultado" id="%InfrNIFinal2">0,00</label>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-5">
+                            <label class="txt_macroitem">Custo Total de Construção (s/ BDI)</label>
+                        </div>
+                        <div class="col-md-4">
+                            <label class="txt_resultado" id="ValorCalcTotal2">R$ 0,00</label>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-5">
+                            <label class="txt_macroitem">Valor do BDI</label>
+                        </div>
+                        <div class="col-md-4">
+                            <label class="txt_resultado" id="ValorBDI2">R$ 0,00</label>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-5">
+                            <label class="txt_macroitem">Custo Total de Construção (c/ BDI)</label>
+                        </div>
+                        <div class="col-md-4">
+                            <label class="txt_resultado" id="ValorCalcTotalBDI2">R$ 0,00</label>
+                        </div>
+                    </div>
+                    <br>
+                    <br>
+                    <div class="row">
+                        <div class="col-md-12">
+                            <div id="chartdiv" style="width: 100%; height: 400px;"></div>
+                        </div>
+
+
+                    </div>
+
+
+                </div>
+
+            </div>
+            <div class="row">
+                <div class="col-md-12">
+                    <button onclick="imprimirPagina()">Imprimir Página</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+
+</html>

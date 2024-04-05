@@ -1,0 +1,271 @@
+.navbar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.navbar-brand {
+    flex-grow: 1;
+    text-align: center;
+    font-size: 40px;
+    background-color: darkgray;
+
+}
+
+.navbar-brand img {
+    position: absolute;
+    left: 15px;
+    width: 70px;
+    height: 70px;
+    /* Ajuste conforme necessário */
+}
+
+.confidencial {
+    width: 97%;
+    text-align: right;
+    font-size: 15px;
+
+}
+
+.minha-textarea {
+    width: 100%;
+    /* Largura */
+    height: 100%;
+    /* Altura */
+    resize: none;
+    /* Opcional: impede o usuário de redimensionar */
+}
+
+.imobBoxTipoTitulo {
+    margin: 10px 0;
+    padding-left: 10px;
+    color: #004684;
+    font-size: 18px;
+    /* Azul Caixa */
+}
+
+.txt_center {
+    color: #004684;
+    font-size: 18px;
+    width: 100%;
+    font-size: large;
+    padding: 5px;
+    margin: 0px 0;
+    text-align: center;
+    /* Azul Caixa */
+}
+
+.txt_direita {
+    color: #004684;
+    font-size: 18px;
+    width: 100%;
+    font-size: large;
+    padding: 5px;
+    margin: 0px 0;
+    text-align: right;
+    /* Azul Caixa */
+}
+
+.txt_esquerda {
+    color: #004684;
+    font-size: 18px;
+    width: 100%;
+    font-size: large;
+    padding: 5px;
+    margin: 0px 0;
+    text-align: left;
+    /* Azul Caixa */
+}
+
+.txt_alerta {
+    color: #fa0909;
+    font-size: 18px;
+    width: 100%;
+    font-size: large;
+    padding: 5px;
+    margin: 0px 0;
+    text-align: center;
+    /* Azul Caixa */
+}
+
+.imobBoxTituloGrupo {
+    background-color: #ffffff09;
+    color: #004684;
+    margin: 10px 0;
+    padding-left: 10px;
+
+}
+
+
+body {
+    font-family: 'Arial', sans-serif;
+    background-color: #f4f4f48f;
+    color: #333;
+    line-height: 1.6;
+}
+
+select {
+    display: block;
+    width: 100%;
+    padding: 10px;
+    margin-top: 5px;
+    border: 1px solid #004684;
+    background-color: #e6e6e62c;
+    /*#cccccc96;
+    border-color: #004684;*/
+    border-radius: 4px;
+    box-shadow: 0 0 5px #004684;
+    /* Cinza claro */
+}
+
+select:focus {
+    width: 100%;
+    outline: none;
+    border-color: #004684;
+    box-shadow: 0 0 5px #004684;
+    /* Sombra azul para foco */
+}
+
+.imobBox {
+    background-color: #ffffff09;
+    color: #004684;
+    margin: 10px 0;
+    padding-left: 10px;
+
+}
+
+.txt {
+    width: 100%;
+    padding: 10px;
+    margin: 5px 0;
+    border: 1px solid #004684;
+    border-radius: 4px;
+    background-color: #e6e6e62c;
+    box-shadow: 0 0 5px #004684;
+}
+
+.PerTotal {
+    margin: 10px 0;
+    padding-left: 10px;
+    color: #004684;
+    font-size: 18px;
+    text-align: center;
+
+}
+
+.botao {
+    display: inline-block;
+    font-size: 30px;
+    width: 100%;
+    /* padding: 10px 20px;
+    margin: 20px 0;*/
+    background-color: rgb(238, 167, 14);
+    font-size: 20;
+    /* Verde Caixa */
+    color: #004684;
+    border: 1px solid #004684;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+
+}
+
+.toggle-button {
+    display: inline-block;
+    font-size: 15px;
+    width: 300px;
+    /* padding: 10px 20px;
+    margin: 20px 0;*/
+    background-color: rgb(177, 175, 169);
+    color: #004684;
+    border: 1px solid #004684;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+
+}
+
+.toggle-button2 {
+    display: inline-block;
+    font-size: 15px;
+    width: 300px;
+    /* padding: 10px 20px;
+    margin: 20px 0;*/
+    background-color: rgb(177, 175, 169);
+    color: #004684;
+    border: 1px solid #004684;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+
+}
+
+.tituloResultado {
+    background-color: #ffffff09;
+    color: #004684;
+    margin: 10px 0;
+    padding-left: 10px;
+    text-align: center;
+    font-size: 40px;
+    width: 100%;
+
+}
+
+.valorResultado {
+    font-weight: bold;
+    color: rgb(238, 167, 14);
+    width: 100%;
+    padding: 10px;
+    padding-top: 5px;
+    text-align: left;
+}
+
+.txt_macroitem {
+    width: 100%;
+    font-size: large;
+    padding: 5px;
+    margin: 0px 0;
+    text-align: right;
+
+}
+
+.txt_resultado {
+    width: 100%;
+    padding: 5px;
+    margin: 0px 0;
+    border: 1px solid #004684;
+    background-color: #e6e6e62c;
+    box-shadow: 0 0 5px #004684;
+    font-weight: bold;
+}
+
+
+table {
+    border-collapse: collapse;
+    /* Remove qualquer espaço duplo entre as bordas */
+}
+
+th,
+td {
+    border: 1px solid black;
+    /* Define a largura, estilo e cor da borda */
+    padding: 8px;
+    /* Adiciona um pouco de espaço ao redor do conteúdo das células */
+}
+
+#detalhesValoresCalculados {
+    transition: display 0.5s ease;
+}
+
+@media print {
+    .container {
+        width: auto !important;
+        /* ou um valor específico que funcione bem */
+        max-width: 100%;
+        /* Assegura que não exceda a largura disponível */
+        box-sizing: border-box;
+        /* Inclui padding e borda no cálculo da largura */
+    }
+
+
+}
